@@ -1,8 +1,8 @@
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.properties.EncryptableProperties;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
@@ -12,7 +12,6 @@ public class DBConnect {
     private static ResultSet rs;
 
     public DBConnect(){
-
         try {
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword("CxqSR7sUk5DXNcrE");
@@ -35,7 +34,7 @@ public class DBConnect {
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword("CxqSR7sUk5DXNcrE");
             Properties prop = new EncryptableProperties(encryptor);
-            prop.load(new FileInputStream("cybermafia.properties"));
+            prop.load(new FileInputStream("data\\cybermafia.properties"));
             String url = prop.getProperty("dataSource.url");
             String uName = prop.getProperty("dataSource.username");
             String uPass = prop.getProperty("dataSource.password");
