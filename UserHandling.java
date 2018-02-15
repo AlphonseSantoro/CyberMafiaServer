@@ -12,29 +12,15 @@ public class UserHandling implements Serializable{
     private static final Random random = new SecureRandom();
     private static final long serialVersionUID = 1L;
     private Connection connect;
-    private boolean select, execute = false;
-    private String sqlStatement;
+    private boolean select, execute, validate, register;
+    private String sqlStatement1, sqlStatement2, username, password, email, ip, answer;
     private ResultSet resultSet;
-
-    /**
-     * Constructor to create a new user.
-     * @param userName A unique username for identification
-     * @param password The new users password
-     * @param email The new users email
-     * @param ip The users in-game IP
-     */
-    public UserHandling(String userName, String password, String email, String ip){
-        connect = DBConnect.getConnection();
-        insertNewUserIntoPlayerTable(userName, password, email, ip);
-    }
 
     /**
      * Construct a connection to DB
      */
     public UserHandling(){
-        connect = DBConnect.getConnection();
     }
-
 
     /**
      * Get a random 16 byte salt.
@@ -67,9 +53,7 @@ public class UserHandling implements Serializable{
      * @param passWord
      * @return
      */
-    public boolean validateUser(String userName, String passWord){
-        ResultSet rs = DBConnect.selectStatement("SELECT password, salt FROM User WHERE username = '" + userName + "';");
-
+    public boolean validateUser(String userName, String passWord, ResultSet rs){
         String dbPass = "";
         String salt = "";
         try {
@@ -112,36 +96,145 @@ public class UserHandling implements Serializable{
 
     /**
      * Create a new user and insert default values into Player table in DB.
-     * @param newUserName
-     * @param password
-     * @param email
-     * @param ip
      */
-    public void insertNewUserIntoPlayerTable(String newUserName, String password, String email, String ip){
+    public void insertNewUserIntoPlayerTable() throws SQLException {
         String salt = bytesToHex(getNextSalt());
-        String sha256hex = hashString(password, salt);
+        String sha256hex = hashString(this.password, salt);
         String userInsertStatement = "INSERT INTO User (username, password, salt, email) " +
-                                     "VALUES ('" + newUserName + "', '" + sha256hex + "', '" + salt + "', '" + email + "');";
-        DBConnect.executeStatement(userInsertStatement);
+                                     "VALUES ('" + this.username + "', '" + sha256hex + "', '" + salt + "', '" + this.email + "');";
+        sqlStatement1 = userInsertStatement;
         String playerInsertStatement = "INSERT INTO Player (username, playerIP, pc_CPU_ID, pc_GPU_ID, pc_HDD_ID)" +
-                             "VALUES ('" + newUserName + "', '" + ip + "', 1, 1, 1);";
-        DBConnect.executeStatement(playerInsertStatement);
+                             "VALUES ('" + this.username + "', '" + new IPHandling().generateIPv7() + "', 1, 1, 1);";
+        sqlStatement2 = playerInsertStatement;
     }
 
     /**
      * Set SQL statement string
-     * @param sqlStatement
+     * @param sqlStatement1
      */
-    public void setSqlStatement(String sqlStatement){
-        this.sqlStatement = sqlStatement;
+    public void setSqlStatement1(String sqlStatement1){
+        this.sqlStatement1 = sqlStatement1;
     }
 
     /**
      * Returns an SQL statement
      * @return
      */
-    public String getSqlStatement(){
-        return this.sqlStatement;
+    public String getSqlStatement1(){
+        return this.sqlStatement1;
+    }
+
+    /**
+     * Set SQL statement string
+     * @param sqlStatement2
+     */
+    public void setSqlStatement2(String sqlStatement2){
+        this.sqlStatement2 = sqlStatement2;
+    }
+
+    /**
+     * Returns an SQL statement
+     * @return
+     */
+    public String getSqlStatement2(){
+        return this.sqlStatement2;
+    }
+
+    /**
+     * Set string username
+     * @param username
+     */
+    public void setUsername(String username){
+        this.username = username;
+    }
+
+    /**
+     * Returns string username
+     * @return Username of type String
+     */
+    public String getUsername(){
+        return this.username;
+    }
+
+    /**
+     * Set String password
+     * @param password
+     */
+    public void setPassword(String password){
+        this.password = password;
+    }
+
+    /**
+     * Returns String password
+     * @return Password of type String
+     */
+    public String getPassword(){
+        return this.password;
+    }
+
+    /**
+     * Set String email
+     * @param email
+     */
+    public void setEmail(String email){
+        this.email = email;
+    }
+
+    /**
+     * Get String email
+     * @return
+     */
+    public String getEmail(){
+        return this.email;
+    }
+
+    /**
+     * Set String IP
+     * @param ip
+     */
+    public void setIp(String ip){
+        this.ip = ip;
+    }
+
+    /**
+     * Get String IP
+     * @return
+     */
+    public String getIP(){
+        return this.ip;
+    }
+
+    /**
+     * Set String answer
+     * @param answer
+     * @return
+     */
+    public void setAnswer(String answer){
+        this.answer = answer;
+    }
+
+    /**
+     * Get String answer
+     * @return
+     */
+    public String getAnswer(){
+        return this.answer;
+    }
+
+    /**
+     * Set boolean register
+     * @param register
+     */
+    public void setRegister(boolean register){
+        this.register = register;
+    }
+
+    /**
+     * Get boolean register
+     * @return
+     */
+    public boolean getRegister(){
+        return this.register;
     }
 
     /**
@@ -150,6 +243,22 @@ public class UserHandling implements Serializable{
      */
     public void setSelect(boolean select){
         this.select = select;
+    }
+
+    /**
+     * Set boolean Validate
+     * @param validate
+     */
+    public void setValidate(boolean validate){
+        this.validate = validate;
+    }
+
+    /**
+     * Get boolean Validate
+     * @return
+     */
+    public boolean getValidate(){
+        return this.validate;
     }
 
     /**
@@ -185,7 +294,7 @@ public class UserHandling implements Serializable{
     }
 
     /**
-     * Returns a resultset
+     * Get resultset
      * @return
      */
     public ResultSet getResultSet(){

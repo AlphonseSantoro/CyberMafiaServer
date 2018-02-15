@@ -57,7 +57,7 @@ public class DBConnect {
 
     public static ResultSet selectStatement(String sqlSelectStatement){
         try {
-            PreparedStatement selectStatement = con.prepareStatement(sqlSelectStatement);
+            PreparedStatement selectStatement = DBConnect.getConnection().prepareStatement(sqlSelectStatement);
             rs = selectStatement.executeQuery();
         } catch (SQLException err){
             System.out.println(err.getMessage());
@@ -67,10 +67,11 @@ public class DBConnect {
 
     public static void executeStatement(String sqlInsertStatement){
         try {
-            PreparedStatement insertStatement = con.prepareStatement(sqlInsertStatement);
+            PreparedStatement insertStatement = DBConnect.getConnection().prepareStatement(sqlInsertStatement);
             insertStatement.executeUpdate();
         }  catch (SQLException err){
             System.out.println(err.getMessage());
         }
     }
+
 }
