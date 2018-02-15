@@ -19,8 +19,7 @@ public class Server {
         int portNumber = Integer.parseInt(args[0]);
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
             while (listening){
-                ServerThread thread = new ServerThread(serverSocket.accept());
-                thread.run();
+                new ServerThread(serverSocket.accept()).start();
             }
         } catch (IOException e) {
             e.printStackTrace();

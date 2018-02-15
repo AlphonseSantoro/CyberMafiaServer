@@ -1,14 +1,20 @@
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
 
-public class UserHandling {
+public class UserHandling implements Serializable{
     private static final Random random = new SecureRandom();
-    private DBConnect connect;
+    private static final long serialVersionUID = 1L;
+    private Connection connect;
+    private boolean select, execute = false;
+    private String sqlStatement;
+    private ResultSet resultSet;
 
     /**
      * Constructor to create a new user.
@@ -18,7 +24,7 @@ public class UserHandling {
      * @param ip The users in-game IP
      */
     public UserHandling(String userName, String password, String email, String ip){
-        connect = new DBConnect();
+        connect = DBConnect.getConnection();
         insertNewUserIntoPlayerTable(userName, password, email, ip);
     }
 
@@ -26,7 +32,7 @@ public class UserHandling {
      * Construct a connection to DB
      */
     public UserHandling(){
-        connect = new DBConnect();
+        connect = DBConnect.getConnection();
     }
 
 
@@ -116,9 +122,73 @@ public class UserHandling {
         String sha256hex = hashString(password, salt);
         String userInsertStatement = "INSERT INTO User (username, password, salt, email) " +
                                      "VALUES ('" + newUserName + "', '" + sha256hex + "', '" + salt + "', '" + email + "');";
-        connect.executeStatement(userInsertStatement);
+        DBConnect.executeStatement(userInsertStatement);
         String playerInsertStatement = "INSERT INTO Player (username, playerIP, pc_CPU_ID, pc_GPU_ID, pc_HDD_ID)" +
                              "VALUES ('" + newUserName + "', '" + ip + "', 1, 1, 1);";
-        connect.executeStatement(playerInsertStatement);
+        DBConnect.executeStatement(playerInsertStatement);
+    }
+
+    /**
+     * Set SQL statement string
+     * @param sqlStatement
+     */
+    public void setSqlStatement(String sqlStatement){
+        this.sqlStatement = sqlStatement;
+    }
+
+    /**
+     * Returns an SQL statement
+     * @return
+     */
+    public String getSqlStatement(){
+        return this.sqlStatement;
+    }
+
+    /**
+     * Set Select boolean
+     * @param select
+     */
+    public void setSelect(boolean select){
+        this.select = select;
+    }
+
+    /**
+     * Get Select boolean
+     * @return
+     */
+    public boolean getSelect(){
+        return this.select;
+    }
+
+    /**
+     * Set Execute boolean
+     * @param execute
+     */
+    public void setExecute(boolean execute){
+        this.execute = execute;
+    }
+
+    /**
+     * Get Execute boolean
+     * @return
+     */
+    public boolean getExecute(){
+        return this.execute;
+    }
+
+    /**
+     * Set resultset
+     * @return
+     */
+    public void setResultSet(ResultSet resultSet){
+        this.resultSet = resultSet;
+    }
+
+    /**
+     * Returns a resultset
+     * @return
+     */
+    public ResultSet getResultSet(){
+        return this.resultSet;
     }
 }
