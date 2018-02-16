@@ -1,3 +1,4 @@
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -23,10 +24,10 @@ public class IPHandling {
     *   TODO: Too similar to IPv6. Find new format...
     */
     private String generateIpChunk(){
-        return "" + (char)randomLetters.getRandomChar('A', 26) +
-                (char)randomLetters.getRandomChar('A', 26) +
-                (char)randomLetters.getRandomChar('A', 26) +
-                (char)randomLetters.getRandomChar('A', 26);
+        return "" + randomLetters.getRandomChar('A', 26) +
+                randomLetters.getRandomChar('A', 26) +
+                randomLetters.getRandomChar('A', 26) +
+                randomLetters.getRandomChar('A', 26);
     }
 
     /**
@@ -35,7 +36,10 @@ public class IPHandling {
      * @return Return true if the address exist in DB.
      */
     private boolean isIpInUse(String ip) throws SQLException {
-        rs = DBConnect.selectStatement("SELECT IP FROM IP_LIST WHERE IP = '" + ip + "';");
+        String ipStmt = "SELECT IP FROM IP_LIST WHERE IP = ?;";
+        PreparedStatement checkIP = DBConnect.getConnection().prepareStatement(ipStmt);
+        checkIP.setString(1, ip);
+        rs = DBConnect.selectStatement(checkIP);
         String rsIP;
         while (rs.next()){
             rsIP = rs.getString("ip");

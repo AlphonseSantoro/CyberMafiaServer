@@ -66,7 +66,7 @@ public class DBConnect {
 
     public static void executeStatement(PreparedStatement statement){
         try {
-            statement.executeQuery();
+            statement.executeUpdate();
         }  catch (SQLException err){
             System.out.println(err.getMessage());
         }

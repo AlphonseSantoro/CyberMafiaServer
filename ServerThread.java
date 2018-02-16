@@ -36,15 +36,9 @@ public class ServerThread extends Thread {
                 objOut.writeObject(objectInput);
             }
             if(objectInput.getRegister()){
-                insertNewUserIntoPlayerTable();
-                DBConnect.executeStatement(objectInput.getSqlStatement1());
-                DBConnect.executeStatement(objectInput.getSqlStatement2());
+                insertNewUserIntoPlayerTable(objectInput.getUsername(), objectInput.getPassword(), objectInput.getEmail());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (IOException|ClassNotFoundException|SQLException e) {
             e.printStackTrace();
         }
     }
@@ -62,6 +56,7 @@ public class ServerThread extends Thread {
         userInsert.setString(2, sha256hex);
         userInsert.setString(3, salt);
         userInsert.setString(4, email);
+        DBConnect.executeStatement(userInsert);
 
         // Prepare statement for Player table
         String ip = new IPHandling().generateIPv7();
@@ -70,15 +65,28 @@ public class ServerThread extends Thread {
         PreparedStatement playerInsert = DBConnect.getConnection().prepareStatement(playerInsertStatement);
         playerInsert.setString(1, username);
         playerInsert.setString(2, ip);
+        DBConnect.executeStatement(playerInsert);
     }
 
+    /**
+     * Validate if username and password is correct
+     * @param username
+     * @param password
+     * @return
+     */
     private String validateUser(String username, String password) throws SQLException {
         String userStmt = "SELECT password, salt FROM User WHERE username = ?;";
         PreparedStatement selectUser = DBConnect.getConnection().prepareStatement(userStmt);
         selectUser.setString(1, username);
         ResultSet rs = DBConnect.selectStatement(selectUser);
-        UserHandling user = new UserHandling();
-        if(user.validateUser(username, password, rs)){
+        String dbPass = "";
+        String salt = "";
+        while (rs.next()) {
+            dbPass = rs.getString("password");
+            salt = rs.getString("salt");
+        }
+        String validatePass = Security.hashString(password, salt);
+        if(validatePass.equals(dbPass)){
             String update = "UPDATE user SET lastlogin = current_timestamp() WHERE username = ?;";
             PreparedStatement loginStmt = DBConnect.getConnection().prepareStatement(update);
             loginStmt.setString(1, username);
@@ -86,33 +94,5 @@ public class ServerThread extends Thread {
             return "true";
         }
         return "false";
-    }
-
-    //TODO: FIND A WAY TO MERGE THIS AND THE ABOVE METHOD
-
-    /**
-     * Validate if username and password is correct
-     * @param userName
-     * @param passWord
-     * @return
-     */
-    public boolean validateUser(String userName, String passWord, ResultSet rs){
-        String dbPass = "";
-        String salt = "";
-        try {
-            while (rs.next()) {
-                dbPass = rs.getString("password");
-                salt = rs.getString("salt");
-            }
-        } catch (SQLException err){
-            System.out.println(err.getMessage());
-        }
-        String validatePass = hashString(passWord, salt);
-        if(!validatePass.equals(dbPass)){
-            System.out.println("Access Denied: Wrong password");
-            return false;
-        }
-        System.out.println("Access Granted");
-        return true;
     }
 }
