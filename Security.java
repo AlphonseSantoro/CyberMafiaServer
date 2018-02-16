@@ -1,3 +1,7 @@
+/**
+ * This class is only for security related things.
+ */
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +17,7 @@ public class Security {
      * @param salt
      * @return
      */
-    public String hashString(String password, String salt){
+    public static String hashString(String password, String salt){
         String saltPlussPass = salt + password;
         String sha256hex = "";
         try {
@@ -33,7 +37,7 @@ public class Security {
      * @param hash
      * @return Hex in type string
      */
-    private static String bytesToHex(byte[] hash) {
+    public static String bytesToHex(byte[] hash) {
         StringBuffer hexString = new StringBuffer();
         for (int i = 0; i < hash.length; i++) {
             String hex = Integer.toHexString(0xff & hash[i]);
@@ -47,7 +51,7 @@ public class Security {
      * Get a random 16 byte salt.
      * @return
      */
-    private static byte[] getNextSalt(){
+    public static byte[] getNextSalt(){
         byte[] salt = new byte[16];
         random.nextBytes(salt);
         return salt;

@@ -24,18 +24,19 @@ public class ServerThread extends Thread {
             out.println(outputLine);
             UserHandling objectInput = (UserHandling) objIn.readObject();
 
+            /* This has no functionality yet. TODO: This will possibly be for retrieval of highscores or something.
             if(objectInput.getSelect()){
                 ResultSet rs = DBConnect.selectStatement(objectInput.getSqlStatement1());
                 objOut.writeObject(rs);
             }
+            */
             if(objectInput.getValidate()){
                 outputLine = validateUser(objectInput.getUsername(), objectInput.getPassword());
                 objectInput.setAnswer(outputLine);
                 objOut.writeObject(objectInput);
             }
             if(objectInput.getRegister()){
-                System.out.println(objectInput.getUsername() +  " " + objectInput.getPassword() + " " + objectInput.getEmail());
-                objectInput.insertNewUserIntoPlayerTable();
+                insertNewUserIntoPlayerTable();
                 DBConnect.executeStatement(objectInput.getSqlStatement1());
                 DBConnect.executeStatement(objectInput.getSqlStatement2());
             }
@@ -46,6 +47,29 @@ public class ServerThread extends Thread {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Create a new user and insert default values into Player table in DB.
+     */
+    public void insertNewUserIntoPlayerTable(String username, String password, String email) throws SQLException {
+        // Prepare statement for user table
+        String salt = Security.bytesToHex(Security.getNextSalt());
+        String sha256hex = Security.hashString(password, salt);
+        String userInsertStatement = "INSERT INTO User (username, password, salt, email) VALUES (?, ?, ?, ?);";
+        PreparedStatement userInsert = DBConnect.getConnection().prepareStatement(userInsertStatement);
+        userInsert.setString(1, username);
+        userInsert.setString(2, sha256hex);
+        userInsert.setString(3, salt);
+        userInsert.setString(4, email);
+
+        // Prepare statement for Player table
+        String ip = new IPHandling().generateIPv7();
+        String playerInsertStatement = "INSERT INTO Player (username, playerIP, pc_CPU_ID, pc_GPU_ID, pc_HDD_ID)" +
+                "VALUES (?, ?, 1, 1, 1);";
+        PreparedStatement playerInsert = DBConnect.getConnection().prepareStatement(playerInsertStatement);
+        playerInsert.setString(1, username);
+        playerInsert.setString(2, ip);
     }
 
     private String validateUser(String username, String password) throws SQLException {
@@ -90,19 +114,5 @@ public class ServerThread extends Thread {
         }
         System.out.println("Access Granted");
         return true;
-    }
-
-    /**
-     * Create a new user and insert default values into Player table in DB.
-     */
-    public void insertNewUserIntoPlayerTable() throws SQLException {
-        String salt = bytesToHex(getNextSalt());
-        String sha256hex = hashString(this.password, salt);
-        String userInsertStatement = "INSERT INTO User (username, password, salt, email) " +
-                "VALUES ('" + this.username + "', '" + sha256hex + "', '" + salt + "', '" + this.email + "');";
-        sqlStatement1 = userInsertStatement;
-        String playerInsertStatement = "INSERT INTO Player (username, playerIP, pc_CPU_ID, pc_GPU_ID, pc_HDD_ID)" +
-                "VALUES ('" + this.username + "', '" + new IPHandling().generateIPv7() + "', 1, 1, 1);";
-        sqlStatement2 = playerInsertStatement;
     }
 }
