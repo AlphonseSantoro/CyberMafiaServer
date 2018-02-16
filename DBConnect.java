@@ -55,20 +55,18 @@ public class DBConnect {
         return con;
     }
 
-    public static ResultSet selectStatement(String sqlSelectStatement){
+    public static ResultSet selectStatement(PreparedStatement statement){
         try {
-            PreparedStatement selectStatement = DBConnect.getConnection().prepareStatement(sqlSelectStatement);
-            rs = selectStatement.executeQuery();
+            rs = statement.executeQuery();
         } catch (SQLException err){
             System.out.println(err.getMessage());
         }
         return rs;
     }
 
-    public static void executeStatement(String sqlInsertStatement){
+    public static void executeStatement(PreparedStatement statement){
         try {
-            PreparedStatement insertStatement = DBConnect.getConnection().prepareStatement(sqlInsertStatement);
-            insertStatement.executeUpdate();
+            statement.executeQuery();
         }  catch (SQLException err){
             System.out.println(err.getMessage());
         }

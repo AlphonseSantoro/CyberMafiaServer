@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -47,12 +48,61 @@ public class ServerThread extends Thread {
         }
     }
 
-    private String validateUser(String username, String password){
-        ResultSet rs = DBConnect.selectStatement("SELECT password, salt FROM User WHERE username = '" + username + "';");
+    private String validateUser(String username, String password) throws SQLException {
+        String userStmt = "SELECT password, salt FROM User WHERE username = ?;";
+        PreparedStatement selectUser = DBConnect.getConnection().prepareStatement(userStmt);
+        selectUser.setString(1, username);
+        ResultSet rs = DBConnect.selectStatement(selectUser);
         UserHandling user = new UserHandling();
         if(user.validateUser(username, password, rs)){
+            String update = "UPDATE user SET lastlogin = current_timestamp() WHERE username = ?;";
+            PreparedStatement loginStmt = DBConnect.getConnection().prepareStatement(update);
+            loginStmt.setString(1, username);
+            DBConnect.executeStatement(loginStmt);
             return "true";
         }
         return "false";
+    }
+
+    //TODO: FIND A WAY TO MERGE THIS AND THE ABOVE METHOD
+
+    /**
+     * Validate if username and password is correct
+     * @param userName
+     * @param passWord
+     * @return
+     */
+    public boolean validateUser(String userName, String passWord, ResultSet rs){
+        String dbPass = "";
+        String salt = "";
+        try {
+            while (rs.next()) {
+                dbPass = rs.getString("password");
+                salt = rs.getString("salt");
+            }
+        } catch (SQLException err){
+            System.out.println(err.getMessage());
+        }
+        String validatePass = hashString(passWord, salt);
+        if(!validatePass.equals(dbPass)){
+            System.out.println("Access Denied: Wrong password");
+            return false;
+        }
+        System.out.println("Access Granted");
+        return true;
+    }
+
+    /**
+     * Create a new user and insert default values into Player table in DB.
+     */
+    public void insertNewUserIntoPlayerTable() throws SQLException {
+        String salt = bytesToHex(getNextSalt());
+        String sha256hex = hashString(this.password, salt);
+        String userInsertStatement = "INSERT INTO User (username, password, salt, email) " +
+                "VALUES ('" + this.username + "', '" + sha256hex + "', '" + salt + "', '" + this.email + "');";
+        sqlStatement1 = userInsertStatement;
+        String playerInsertStatement = "INSERT INTO Player (username, playerIP, pc_CPU_ID, pc_GPU_ID, pc_HDD_ID)" +
+                "VALUES ('" + this.username + "', '" + new IPHandling().generateIPv7() + "', 1, 1, 1);";
+        sqlStatement2 = playerInsertStatement;
     }
 }
