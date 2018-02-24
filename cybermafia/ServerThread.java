@@ -1,3 +1,9 @@
+package cybermafia;
+
+import cybermafia.IPHandling;
+import cybermafia.Security;
+import cybermafia.UserHandling;
+
 import java.io.*;
 import java.net.Socket;
 import java.sql.PreparedStatement;
@@ -9,7 +15,7 @@ public class ServerThread extends Thread {
     private Socket socket = null;
 
     public ServerThread(Socket socket){
-        super("ServerThread");
+        super("cybermafia.ServerThread");
         this.socket = socket;
     }
 
@@ -26,7 +32,7 @@ public class ServerThread extends Thread {
 
             /* This has no functionality yet. TODO: This will possibly be for retrieval of highscores or something.
             if(objectInput.getSelect()){
-                ResultSet rs = DBConnect.selectStatement(objectInput.getSqlStatement1());
+                ResultSet rs = cybermafia.DBConnect.selectStatement(objectInput.getSqlStatement1());
                 objOut.writeObject(rs);
             }
             */

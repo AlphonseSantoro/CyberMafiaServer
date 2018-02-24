@@ -1,7 +1,8 @@
+package cybermafia;
+
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.properties.EncryptableProperties;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;

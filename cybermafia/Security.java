@@ -1,4 +1,4 @@
-/**
+package cybermafia; /**
  * This class is only for security related things.
  */
 

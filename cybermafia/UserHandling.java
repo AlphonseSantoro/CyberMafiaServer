@@ -1,4 +1,4 @@
-/**
+package cybermafia; /**
  * This class is meant for storing data and sending it to the server,
  * the server will retrieve data from this object and create the necessary queries.
  * When the client needs data from the server it is stored in resultSet.
