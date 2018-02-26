@@ -17,7 +17,7 @@ public class DBConnect {
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword("CxqSR7sUk5DXNcrE");
             Properties prop = new EncryptableProperties(encryptor);
-            prop.load(new FileInputStream("data\\cybermafia.properties"));
+            prop.load(new FileInputStream("data/cybermafia.properties"));
             String url = prop.getProperty("dataSource.url");
             String uName = prop.getProperty("dataSource.username");
             String uPass = prop.getProperty("dataSource.password");
@@ -35,7 +35,7 @@ public class DBConnect {
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword("CxqSR7sUk5DXNcrE");
             Properties prop = new EncryptableProperties(encryptor);
-            prop.load(new FileInputStream("data\\cybermafia.properties"));
+            prop.load(new FileInputStream("data/cybermafia.properties"));
             String url = prop.getProperty("dataSource.url");
             String uName = prop.getProperty("dataSource.username");
             String uPass = prop.getProperty("dataSource.password");

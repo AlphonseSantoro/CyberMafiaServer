@@ -38,7 +38,7 @@ public class IPHandling {
      * @return Return true if the address exist in DB.
      */
     private boolean isIpInUse(String ip) throws SQLException {
-        String ipStmt = "SELECT IP FROM IP_LIST WHERE IP = ?;";
+        String ipStmt = "SELECT IP FROM IP_List WHERE IP = ?;";
         PreparedStatement checkIP = DBConnect.getConnection().prepareStatement(ipStmt);
         checkIP.setString(1, ip);
         rs = DBConnect.selectStatement(checkIP);
