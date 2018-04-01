@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.stream.Stream;
 
 public class ServerThread extends Thread {
 
@@ -26,21 +27,42 @@ public class ServerThread extends Thread {
              ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream())
         ) {
             String outputLine;
-            outputLine = "Successfully established connection";
+            outputLine = "Log in successful...";
             out.println(outputLine);
             UserHandling objectInput = (UserHandling) objIn.readObject();
 
-            /* This has no functionality yet. TODO: This will possibly be for retrieval of highscores or something. EDIT: For security i wont return any resultsets.
-            if(objectInput.getSelect()){
-                ResultSet rs = cybermafia.DBConnect.selectStatement(objectInput.getSqlStatement1());
-                objOut.writeObject(rs);
+            /**
+             * Get the currents users profile and return the values as a UserHandling object
+             */
+            if(objectInput.getProfile()){
+                String stmt = "SELECT p.playerip, c.ghz as CGhz, g.ghz as GGhz, h.size " +
+                        "FROM player AS p JOIN pc_cpu AS c ON p.pc_cpu_id = c.id " +
+                        "JOIN pc_gpu AS g ON p.pc_gpu_id = g.id " +
+                        "JOIN pc_hdd AS h ON p.pc_hdd_id = h.id " +
+                        "WHERE p.username = ?;";
+                PreparedStatement preparedStatement = cybermafia.DBConnect.getConnection().prepareStatement(stmt);
+                preparedStatement.setString(1, objectInput.getUsername());
+                ResultSet rs = DBConnect.selectStatement(preparedStatement);
+                UserHandling user = new UserHandling();
+                while(rs.next()){
+                    user.setIp(rs.getString("ip"));
+                    user.setCpu(rs.getString("CGhz"));
+                    user.setGpu(rs.getString("GGhz"));
+                    user.setHdd(rs.getString("size"));
+                }
+                objOut.writeObject(user);
             }
-            */
+            /**
+             * Validate if username and password is correct, return a UserHanding object with boolean value set
+             */
             if(objectInput.getValidate()){
                 boolean answer = validateUser(objectInput.getUsername(), objectInput.getPassword());
                 objectInput.setAnswer(answer);
                 objOut.writeObject(objectInput);
             }
+            /**
+             * Insert new user into database
+             */
             if(objectInput.getRegister()){
                 insertNewUserIntoPlayerTable(objectInput.getUsername(), objectInput.getPassword(), objectInput.getEmail());
             }
