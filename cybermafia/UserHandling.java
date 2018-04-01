@@ -11,6 +11,7 @@ public class UserHandling implements Serializable{
     private static final long serialVersionUID = 1L; // Needed to de-Serialize object, class on server-side and client-side have same UID.
     private boolean select, execute, validate, register, answer;
     private String username, password, email, ip;
+    private int userID;
     private ResultSet resultSet; // Contains table from a query
 
 
@@ -173,5 +174,21 @@ public class UserHandling implements Serializable{
      */
     public ResultSet getResultSet(){
         return this.resultSet;
+    }
+
+    /**
+     * Get current user ID
+     * @return
+     */
+    public int getUserID() {
+        return userID;
+    }
+
+    /**
+     * SetCurrentUserID
+     * @param userID
+     */
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 }
