@@ -9,8 +9,8 @@ import java.sql.ResultSet;
 
 public class UserHandling implements Serializable{
     private static final long serialVersionUID = 1L; // Needed to de-Serialize object, class on server-side and client-side have same UID.
-    private boolean select, execute, validate, register, answer;
-    private String username, password, email, ip;
+    private boolean select, execute, validate, register, answer, profile;
+    private String username, password, email, ip, cpu, gpu, hdd;
     private ResultSet resultSet; // Contains table from a query
 
 
@@ -173,5 +173,69 @@ public class UserHandling implements Serializable{
      */
     public ResultSet getResultSet(){
         return this.resultSet;
+    }
+
+    /**
+     * Get Profile boolean
+     * @return
+     */
+    public boolean getProfile() {
+        return profile;
+    }
+
+    /**
+     * Set Profile boolean
+     * @param profile
+     */
+    public void setProfile(boolean profile) {
+        this.profile = profile;
+    }
+
+    /**
+     * Get Cpu Ghz
+     * @return
+     */
+    public String getCpu() {
+        return cpu;
+    }
+
+    /**
+     * Set Cpu Ghz
+     * @param cpu
+     */
+    public void setCpu(String cpu) {
+        this.cpu = cpu;
+    }
+
+    /**
+     * Get Gpu Ghz
+     * @return
+     */
+    public String getGpu() {
+        return gpu;
+    }
+
+    /**
+     * Set Gpu Ghz
+     * @param gpu
+     */
+    public void setGpu(String gpu) {
+        this.gpu = gpu;
+    }
+
+    /**
+     * Get Hdd size
+     * @return
+     */
+    public String getHdd() {
+        return hdd;
+    }
+
+    /**
+     * Set Hdd size
+     * @param hdd
+     */
+    public void setHdd(String hdd) {
+        this.hdd = hdd;
     }
 }
