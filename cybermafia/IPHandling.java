@@ -6,11 +6,11 @@ import java.sql.SQLException;
 
 public class IPHandling {
 
-    private RandomValue randomLetters;
+    private RandomValue randomNumber;
     private ResultSet rs;
 
     public IPHandling(){
-        randomLetters = new RandomValue();
+        randomNumber = new RandomValue();
     }
 
     public String generateIPv7() throws SQLException {
@@ -26,10 +26,10 @@ public class IPHandling {
     *   TODO: Too similar to IPv6. Find new format...
     */
     private String generateIpChunk(){
-        return "" + randomLetters.getRandomChar('A', 26) +
-                randomLetters.getRandomChar('A', 26) +
-                randomLetters.getRandomChar('A', 26) +
-                randomLetters.getRandomChar('A', 26);
+        return "" + randomNumber.getRandomChar('A', 26) +
+                randomNumber.getRandomChar('A', 26) +
+                randomNumber.getRandomChar('A', 26) +
+                randomNumber.getRandomChar('A', 26);
     }
 
     /**
@@ -38,9 +38,11 @@ public class IPHandling {
      * @return Return true if the address exist in DB.
      */
     private boolean isIpInUse(String ip) throws SQLException {
-        String ipStmt = "SELECT IP FROM IP_List WHERE IP = ?;";
+        String ipStmt = "select ip from ip_list where ip = ?;";
         PreparedStatement checkIP = DBConnect.getConnection().prepareStatement(ipStmt);
+        System.out.println(checkIP);
         checkIP.setString(1, ip);
+        System.out.println(checkIP);
         rs = DBConnect.selectStatement(checkIP);
         String rsIP;
         while (rs.next()){

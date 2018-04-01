@@ -30,7 +30,7 @@ public class ServerThread extends Thread {
             out.println(outputLine);
             UserHandling objectInput = (UserHandling) objIn.readObject();
 
-            /* This has no functionality yet. TODO: This will possibly be for retrieval of highscores or something.
+            /* This has no functionality yet. TODO: This will possibly be for retrieval of highscores or something. EDIT: For security i wont return any resultsets.
             if(objectInput.getSelect()){
                 ResultSet rs = cybermafia.DBConnect.selectStatement(objectInput.getSqlStatement1());
                 objOut.writeObject(rs);
@@ -56,7 +56,7 @@ public class ServerThread extends Thread {
         // Prepare statement for user table
         String salt = Security.bytesToHex(Security.getNextSalt());
         String sha256hex = Security.hashString(password, salt);
-        String userInsertStatement = "INSERT INTO User (username, password, salt, email) VALUES (?, ?, ?, ?);";
+        String userInsertStatement = "INSERT INTO user (username, password, salt, email) VALUES (?, ?, ?, ?);";
         PreparedStatement userInsert = DBConnect.getConnection().prepareStatement(userInsertStatement);
         userInsert.setString(1, username);
         userInsert.setString(2, sha256hex);
@@ -66,7 +66,7 @@ public class ServerThread extends Thread {
 
         // Prepare statement for Player table
         String ip = new IPHandling().generateIPv7();
-        String playerInsertStatement = "INSERT INTO Player (username, playerIP, pc_CPU_ID, pc_GPU_ID, pc_HDD_ID)" +
+        String playerInsertStatement = "INSERT INTO player (username, playerip, pc_cpu_id, pc_gpu_id, pc_hdd_id)" +
                 "VALUES (?, ?, 1, 1, 1);";
         PreparedStatement playerInsert = DBConnect.getConnection().prepareStatement(playerInsertStatement);
         playerInsert.setString(1, username);
@@ -81,7 +81,7 @@ public class ServerThread extends Thread {
      * @return
      */
     private String validateUser(String username, String password) throws SQLException {
-        String userStmt = "SELECT password, salt FROM User WHERE username = ?;";
+        String userStmt = "SELECT password, salt FROM user WHERE username = ?;";
         PreparedStatement selectUser = DBConnect.getConnection().prepareStatement(userStmt);
         selectUser.setString(1, username);
         ResultSet rs = DBConnect.selectStatement(selectUser);

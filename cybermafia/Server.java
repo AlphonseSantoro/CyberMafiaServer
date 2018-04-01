@@ -15,7 +15,7 @@ public class Server {
     private static boolean listening = true;
 
         public static void main(String[] args){
-        if(args.length != 1){
+            if(args.length != 1){
             System.out.println("Usage: java -jar CyberMafiaServer.jar <Port number>");
             System.exit(1);
             }

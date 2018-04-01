@@ -9,8 +9,8 @@ import java.sql.ResultSet;
 
 public class UserHandling implements Serializable{
     private static final long serialVersionUID = 1L; // Needed to de-Serialize object, class on server-side and client-side have same UID.
-    private boolean select, execute, validate, register;
-    private String username, password, email, ip, answer;
+    private boolean select, execute, validate, register, answer;
+    private String username, password, email, ip;
     private ResultSet resultSet; // Contains table from a query
 
 
@@ -83,7 +83,7 @@ public class UserHandling implements Serializable{
      * @param answer
      * @return
      */
-    public void setAnswer(String answer){
+    public void setAnswer(Boolean answer){
         this.answer = answer;
     }
 
@@ -91,7 +91,7 @@ public class UserHandling implements Serializable{
      * Get String answer
      * @return
      */
-    public String getAnswer(){
+    public boolean getAnswer(){
         return this.answer;
     }
 

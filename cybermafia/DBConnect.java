@@ -13,20 +13,7 @@ public class DBConnect {
     private static ResultSet rs;
 
     public DBConnect(){
-        try {
-            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-            encryptor.setPassword("CxqSR7sUk5DXNcrE");
-            Properties prop = new EncryptableProperties(encryptor);
-            prop.load(new FileInputStream("data/cybermafia.properties"));
-            String url = prop.getProperty("dataSource.url");
-            String uName = prop.getProperty("dataSource.username");
-            String uPass = prop.getProperty("dataSource.password");
-            con = DriverManager.getConnection(url, uName, uPass);
-        } catch (IOException err) {
-            System.out.println(err.getMessage());
-        } catch (SQLException err) {
-            System.out.println(err.getMessage());
-        }
+
     }
 
     public Connection createConnection(){
@@ -40,9 +27,7 @@ public class DBConnect {
             String uName = prop.getProperty("dataSource.username");
             String uPass = prop.getProperty("dataSource.password");
             connection = DriverManager.getConnection(url, uName, uPass);
-        } catch (IOException err) {
-            System.out.println(err.getMessage());
-        } catch (SQLException err) {
+        } catch (IOException | SQLException err) {
             System.out.println(err.getMessage());
         }
         return connection;
