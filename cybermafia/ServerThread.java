@@ -37,8 +37,8 @@ public class ServerThread extends Thread {
             }
             */
             if(objectInput.getValidate()){
-                outputLine = validateUser(objectInput.getUsername(), objectInput.getPassword());
-                objectInput.setAnswer(outputLine);
+                boolean answer = validateUser(objectInput.getUsername(), objectInput.getPassword());
+                objectInput.setAnswer(answer);
                 objOut.writeObject(objectInput);
             }
             if(objectInput.getRegister()){
@@ -80,7 +80,7 @@ public class ServerThread extends Thread {
      * @param password
      * @return
      */
-    private String validateUser(String username, String password) throws SQLException {
+    private boolean validateUser(String username, String password) throws SQLException {
         String userStmt = "SELECT password, salt FROM user WHERE username = ?;";
         PreparedStatement selectUser = DBConnect.getConnection().prepareStatement(userStmt);
         selectUser.setString(1, username);
@@ -97,8 +97,8 @@ public class ServerThread extends Thread {
             PreparedStatement loginStmt = DBConnect.getConnection().prepareStatement(update);
             loginStmt.setString(1, username);
             DBConnect.executeStatement(loginStmt);
-            return "true";
+            return true;
         }
-        return "false";
+        return false;
     }
 }
